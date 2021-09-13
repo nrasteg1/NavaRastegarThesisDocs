@@ -1,0 +1,590 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+```{r}
+library(dplyr)
+library(stringr)
+library(dunn.test)
+```
+
+
+```{r}
+MonES0 <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/MonES0.csv")
+MonHU0<- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/MonHU0.csv")
+
+#PM 2.5
+PMBM <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/BMPM.csv")
+PMES <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/ESPM.csv")
+PMHU <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/HUPM.csv")
+#Pm 10
+PM10 <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/PM10Bmore.csv")
+```
+
+```{r}
+PMES$PM2.5 <- as.numeric(PMES$PM2.5)
+PMHU$PM2.5 <- as.numeric(PMHU$PM2.5)
+PMBM$PM2.5 <- as.numeric(PMBM$PM2.5)
+PM10$PM10 <- as.numeric(PM10$PM10)
+
+PMHU <- PMHU[complete.cases(PMHU[ , 2]),]
+PMES <- PMES[complete.cases(PMES[ , 2]),]
+
+PMES$Date <- as.Date(PMES$Date)
+PMHU$Date <- as.Date(PMHU$Date)
+PMBM$Date <- as.Date(PMBM$Date)
+
+MonES0$Yr <- as.factor(MonES0$Yr)
+MonHU0$Yr <- as.factor(MonHU0$Yr)
+
+median(PMHU$PM2.5)
+median(PMES$PM2.5)
+
+names(PM10)[names(PM10) == "ï..Day"] <- "Date"
+PM10$Date  <- as.Date(PM10$Date)
+PM10$mo <- str_sub(PM10$Date, 6, 7)
+PM10$yr <- str_sub(PM10$Date, 3, 4)
+```
+
+```{r}
+fligner.test(MonES0$Al~ MonES0$Yr)
+kruskal.test(MonES0$Al~ MonES0$Yr)
+alES <- aov(MonES0$Al ~ MonES0$Yr)
+summary(alES)
+```
+```{r}
+fligner.test(MonHU0$Al ~ as.factor(MonHU0$Yr))
+kruskal.test(MonHU0$Al ~ as.factor(MonHU0$Yr))
+alHU <- aov(MonHU0$Al ~ as.factor(MonHU0$Yr))
+summary(alHU)
+```
+```{r}
+fligner.test(MonES0$Fe ~ MonES0$Yr)
+kruskal.test(MonES0$Fe ~ MonES0$Yr)
+length(MonES0$Fe)
+feES <- aov(MonES0$Fe ~ MonES0$Yr)
+summary(feES)
+```
+```{r}
+fligner.test(MonHU0$Fe ~ MonHU0$Yr)
+kruskal.test(MonHU0$Fe ~ MonHU0$Yr)
+feHU <- aov(MonHU0$Fe ~ MonHU0$Yr)
+summary(feHU)
+```
+
+```{r}
+fligner.test(MonES0$Pb ~ MonES0$Yr)
+kruskal.test(MonES0$Pb ~ MonES0$Yr)
+pbES <- aov(MonES0$Pb ~ MonES0$Yr)
+summary(pbES)
+```
+```{r}
+fligner.test(MonHU0$Pb ~ MonHU0$Yr)
+kruskal.test(MonHU0$Pb ~ MonHU0$Yr)
+pbHU <- aov(MonHU0$Pb ~ MonHU0$Yr)
+summary(pbHU)
+```
+
+```{r}
+PMHU$Yr <- str_sub(PMHU$Date,3, 4)
+fligner.test(PMHU$PM2.5 ~ PMHU$Yr)
+kruskal.test(PMHU$PM2.5 ~ PMHU$Yr)
+length(PMHU$PM2.5)
+pmHU <- aov(PMHU$PM2.5 ~ PMHU$Yr)
+summary(pmHU)
+```
+
+```{r}
+PMES$Yr <- str_sub(PMES$Date,3, 4)
+fligner.test(PMES$PM2.5 ~ PMES$Yr)
+kruskal.test(PMES$PM2.5 ~ PMES$Yr)
+length(PMES$PM2.5)
+pmES <- aov(PMES$PM2.5 ~ PMES$Yr)
+summary(pmES)
+```
+
+```{r}
+PMBM$Yr <- str_sub(PMBM$Date,3, 4)
+fligner.test(PMBM$PM2.5 ~ PMBM$Yr)
+kruskal.test(PMBM$PM2.5 ~ PMBM$Yr)
+length(PMBM$PM2.5)
+pmBM <- aov(PMBM$PM2.5 ~ PMBM$Yr)
+summary(pmBM)
+```
+
+```{r}
+PMES$Site <- "ES"
+PMHU$Site <- "HU"
+PMBM$Site <- "BM"
+PM <- rbind(PMBM, PMHU, PMES)
+fligner.test(PM$PM2.5 ~ PM$Site)
+kruskal.test(PM$PM2.5 ~ PM$Site)
+length(PM$PM2.5)
+dunn.test(PM$PM2.5 , PM$Site)
+pm <- aov(PM$PM2.5 ~ PM$Site)
+summary(pm)
+```
+
+T test- not sig, HU lower
+```{r}
+var.test(MonHU0$Al, MonES0$Al)
+t.test(MonHU0$Al, MonES0$Al)
+wilcox.test(MonHU0$Al, MonES0$Al)
+```
+
+Not sig, HU higher
+```{r}
+var.test(MonHU0$Fe, MonES0$Fe)
+t.test(MonHU0$Fe, MonES0$Fe)
+wilcox.test(MonHU0$Fe, MonES0$Fe)
+```
+
+
+```{r}
+var.test(MonHU0$Pb, MonES0$Pb)
+t.test(MonHU0$Pb, MonES0$Pb)
+wilcox.test(MonHU0$Pb, MonES0$Pb)
+median(MonHU0$Pb, na.rm=TRUE)
+median(MonES0$Pb, na.rm=TRUE)
+```
+
+
+t test comparing relevent years to all others 
+```{r}
+var.test(subset(MonES0$Al, MonES0$Yr == "20"), MonES0$Al)
+wilcox.test(subset(MonES0$Al, MonES0$Yr == "20"), MonES0$Al)
+t.test(subset(MonES0$Al, MonES0$Yr == "20"), MonES0$Al)
+```
+
+```{r}
+var.test(subset(MonES0$Pb, MonES0$Yr == "20"), MonES0$Pb)
+wilcox.test(subset(MonES0$Pb, MonES0$Yr == "20"), MonES0$Pb)
+t.test(subset(MonES0$Pb, MonES0$Yr == "20"), MonES0$Pb)
+```
+
+```{r}
+var.test(subset(MonES0$Fe, MonES0$Yr == "20"), MonES0$Fe)
+wilcox.test(subset(MonES0$Fe, MonES0$Yr == "20"), MonES0$Fe)
+t.test(subset(MonES0$Fe, MonES0$Yr == "20"), MonES0$Fe)
+```
+```{r}
+var.test(subset(MonHU0$Fe, MonHU0$Yr == "20"), MonHU0$Fe)
+wilcox.test(subset(MonHU0$Fe, MonHU0$Yr == "20"), MonHU0$Fe)
+t.test(subset(MonHU0$Fe, MonHU0$Yr == "20"), MonHU0$Fe)
+```
+```{r}
+var.test(subset(MonHU0$Pb, MonHU0$Yr == "20"), MonHU0$Pb)
+t.test(subset(MonHU0$Pb, MonHU0$Yr == "20"), MonHU0$Pb)
+wilcox.test(subset(MonHU0$Pb, MonHU0$Yr == "20"), MonHU0$Pb)
+```
+```{r}
+var.test(subset(MonHU0$Al, MonHU0$Yr == "20"), MonHU0$Al)
+t.test(subset(MonHU0$Al, MonHU0$Yr == "20"), MonHU0$Al)
+wilcox.test(subset(MonHU0$Al, MonHU0$Yr == "20"), MonHU0$Al)
+```
+```{r}
+PMBM$combo <- str_sub(PMBM$Date, 3, 7)
+PMHU$combo <- str_sub(PMHU$Date, 3, 7)
+PMES$combo <- str_sub(PMES$Date, 3, 7)
+PMES$mo <- str_sub(PMES$Date, 6, 7)
+PMHU$mo <- str_sub(PMHU$Date, 6, 7)
+PMBM$mo <- str_sub(PMBM$Date, 6, 7)
+```
+
+```{r}
+var.test(subset(PMBM$PM2.5, PMBM$mo == "09"), PMBM$PM2.5)
+t.test(subset(PMBM$PM2.5, PMBM$mo == "09"), PMBM$PM2.5)
+wilcox.test(subset(PMBM$PM2.5, PMBM$mo == "09"), PMBM$PM2.5)
+```
+```{r}
+var.test(subset(PMBM$PM2.5, PMBM$mo == "10"), PMBM$PM2.5)
+t.test(subset(PMBM$PM2.5, PMBM$mo == "10"), PMBM$PM2.5)
+wilcox.test(subset(PMBM$PM2.5, PMBM$mo == "10"), PMBM$PM2.5)
+```
+```{r}
+var.test(subset(PMES$PM2.5, PMES$mo == "10"), PMES$PM2.5)
+t.test(subset(PMES$PM2.5, PMES$mo == "10"), PMES$PM2.5)
+wilcox.test(subset(PMES$PM2.5, PMES$mo == "10"), PMES$PM2.5)
+```
+```{r}
+var.test(subset(PMHU$PM2.5, PMHU$mo == "10"), PMHU$PM2.5)
+t.test(subset(PMHU$PM2.5, PMHU$mo == "10"), PMHU$PM2.5)
+wilcox.test(subset(PMHU$PM2.5, PMHU$mo == "10"), PMHU$PM2.5)
+```
+```{r}
+var.test(subset(PMBM$PM2.5, PMBM$mo == "09"), subset(PMBM$PM2.5, PMBM$mo == "10"))
+t.test(subset(PMBM$PM2.5, PMBM$mo == "09"), subset(PMBM$PM2.5, PMBM$mo == "10"))
+wilcox.test(subset(PMBM$PM2.5, PMBM$mo == "09"), subset(PMBM$PM2.5, PMBM$mo == "10"))
+median(subset(PMBM$PM2.5, PMBM$mo == "09"), na.rm=TRUE)
+median(subset(PMBM$PM2.5, PMBM$mo == "10"), na.rm=TRUE)
+mean(subset(PMBM$PM2.5, PMBM$mo == "09"), na.rm=TRUE)
+mean(subset(PMBM$PM2.5, PMBM$mo == "10"), na.rm=TRUE)
+```
+```{r}
+var.test(subset(PMBM$PM2.5, PMBM$combo == "19-09"), subset(PMBM$PM2.5, PMBM$combo == "19-10"))
+t.test(subset(PMBM$PM2.5, PMBM$combo == "19-09"), subset(PMBM$PM2.5, PMBM$combo == "19-10"))
+wilcox.test(subset(PMBM$PM2.5, PMBM$combo == "19-09"), subset(PMBM$PM2.5, PMBM$combo == "19-10"))
+
+```
+
+
+```{r}
+var.test(subset(PMBM$PM2.5, PMBM$Yr == "19"), PMBM$PM2.5)
+t.test(subset(PMBM$PM2.5, PMBM$Yr == "19"), PMBM$PM2.5)
+wilcox.test(subset(PMBM$PM2.5, PMBM$Yr == "19"), PMBM$PM2.5)
+```
+PMHU2020 was significantly LOWER than other years
+```{r}
+var.test(subset(PMHU$PM2.5, PMHU$Yr == "20"), PMHU$PM2.5)
+t.test(subset(PMHU$PM2.5, PMHU$Yr == "20"), PMHU$PM2.5)
+wilcox.test(subset(PMHU$PM2.5, PMHU$Yr == "20"), PMHU$PM2.5)
+```
+```{r}
+var.test(subset(PMES$PM2.5, PMES$Yr == "20"), PMES$PM2.5)
+wilcox.test(subset(PMES$PM2.5, PMES$Yr == "20"), PMES$PM2.5)
+t.test(subset(PMES$PM2.5, PMES$Yr == "20"), PMES$PM2.5)
+```
+```{r}
+var.test(subset(PMES$PM2.5, PMES$combo == "20-10"),PMES$PM2.5)
+wilcox.test(subset(PMES$PM2.5, PMES$combo == "20-10"), PMES$PM2.5)
+t.test(subset(PMES$PM2.5, PMES$combo == "20-10"), PMES$PM2.5)
+```
+```{r}
+var.test(subset(PMHU$PM2.5, PMHU$combo == "20-10"),
+      PMHU$PM2.5)
+wilcox.test(subset(PMHU$PM2.5, PMHU$combo == "20-10"), PMHU$PM2.5)
+t.test(subset(PMHU$PM2.5, PMHU$combo == "20-10"), PMHU$PM2.5)
+```
+```{r}
+var.test(subset(PMBM$PM2.5, PMBM$combo == "19-10"), PMBM$PM2.5)
+wilcox.test(subset(PMBM$PM2.5, PMBM$combo == "19-10"), PMBM$PM2.5)
+t.test(subset(PMBM$PM2.5, PMBM$combo == "19-10"), PMBM$PM2.5)
+```
+
+```{r}
+var.test(subset(PMBM$PM2.5, PMBM$combo == "19-09"), PMBM$PM2.5)
+wilcox.test(subset(PMBM$PM2.5, PMBM$combo == "19-09"), PMBM$PM2.5)
+t.test(subset(PMBM$PM2.5, PMBM$combo == "19-09"), PMBM$PM2.5)
+```
+
+```{r}
+var.test(PMES$PM2.5, PMHU$PM2.5)
+wilcox.test(PMES$PM2.5, PMHU$PM2.5)
+t.test(PMES$PM2.5, PMHU$PM2.5)
+median(PMES$PM2.5)
+median(PMHU$PM2.5)
+median(subset(PMHU$PM2.5, PMHU$Yr == "20"))
+```
+
+Joins
+```{r}
+names(MonHU0)[names(MonHU0) == "ï..Date"] <- "Date"
+MonHU0$Date <- as.Date(MonHU0$Date)
+MonHU0$mo <- str_sub(MonHU0$Date, 6, 7)
+MonHU0$combo <- str_sub(MonHU0$Date, 3, 7)
+
+HUjoin <- inner_join(PMHU, MonHU0, by="Date")
+HUjoin$Alper <- (HUjoin$Al/HUjoin$PM2.5)*100
+HUjoin$Feper <- (HUjoin$Fe/HUjoin$PM2.5)*100
+HUjoin$Pbper <- (HUjoin$Pb/HUjoin$PM2.5)*100
+
+names(MonES0)[names(MonES0) == "ï..Date"] <- "Date"
+MonES0$Date <- as.Date(MonES0$Date)
+MonES0$mo <- str_sub(MonES0$Date,  6, 7)
+MonES0$combo <- str_sub(MonES0$Date, 3, 7)
+
+ESjoin <- inner_join(PMES, MonES0, by="Date")
+ESjoin$Alper <- (ESjoin$Al/ESjoin$PM2.5)*100
+ESjoin$Feper <- (ESjoin$Fe/ESjoin$PM2.5)*100
+ESjoin$Pbper <- (ESjoin$Pb/ESjoin$PM2.5)*100
+```
+
+```{r}
+var.test(subset(ESjoin$Alper, ESjoin$Yr.y == "20"), ESjoin$Alper)
+t.test(subset(ESjoin$Alper, ESjoin$Yr.y == "20"), ESjoin$Alper)
+wilcox.test(subset(ESjoin$Alper, ESjoin$Yr.y == "20"), ESjoin$Alper)
+```
+
+
+```{r}
+median(subset(ESjoin$Feper, ESjoin$Yr.y == "20"))
+median(subset(HUjoin$Feper, HUjoin$Yr.y == "20"))
+
+median(ESjoin$Pbper, na.rm=TRUE)
+median(HUjoin$Pbper, na.rm=TRUE)
+median(ESjoin$Feper, na.rm=TRUE)
+median(HUjoin$Feper, na.rm=TRUE)
+
+```
+
+```{r}
+var.test(subset(ESjoin$Feper, ESjoin$Yr.y == "20"), ESjoin$Feper)
+t.test(subset(ESjoin$Feper, ESjoin$Yr.y == "20"), ESjoin$Feper)
+wilcox.test(subset(ESjoin$Feper, ESjoin$Yr.y == "20"), ESjoin$Feper)
+
+median(subset(ESjoin$Feper, ESjoin$Yr.y == "20"), na.rm=TRUE)
+
+```
+```{r}
+var.test(subset(ESjoin$Pbper, ESjoin$Yr.y == "20"), ESjoin$Pbper)
+t.test(subset(ESjoin$Pbper, ESjoin$Yr.y == "20"), ESjoin$Pbper)
+wilcox.test(subset(ESjoin$Pbper, ESjoin$Yr.y == "20"), ESjoin$Pbper)
+```
+```{r}
+var.test(subset(HUjoin$Alper, HUjoin$Yr.y == "20"), HUjoin$Alper)
+t.test(subset(HUjoin$Alper, HUjoin$Yr.y == "20"), HUjoin$Alper)
+wilcox.test(subset(HUjoin$Alper, HUjoin$Yr.y == "20"), HUjoin$Alper)
+```
+```{r}
+var.test(subset(HUjoin$Feper, HUjoin$Yr.y == "20"), HUjoin$Feper)
+t.test(subset(HUjoin$Feper, HUjoin$Yr.y == "20"), HUjoin$Feper)
+wilcox.test(subset(HUjoin$Feper, HUjoin$Yr.y == "20"), HUjoin$Feper)
+```
+```{r}
+var.test(subset(HUjoin$Pbper, HUjoin$Yr.y == "20"), HUjoin$Pbper)
+t.test(subset(HUjoin$Pbper, HUjoin$Yr.y == "20"), HUjoin$Pbper)
+wilcox.test(subset(HUjoin$Pbper, HUjoin$Yr.y == "20"), HUjoin$Pbper)
+```
+```{r}
+var.test(subset(HUjoin$Pbper, HUjoin$combo.x == "20-10"),HUjoin$Pbper)
+t.test(subset(HUjoin$Pbper, HUjoin$combo.x == "20-10"), HUjoin$Pbper)
+wilcox.test(subset(HUjoin$Pbper, HUjoin$combo.x == "20-10"), HUjoin$Pbper)
+```
+```{r}
+var.test(subset(HUjoin$Feper, HUjoin$combo.x == "20-10"), HUjoin$Feper)
+t.test(subset(HUjoin$Feper, HUjoin$combo.x == "20-10"), HUjoin$Feper)
+wilcox.test(subset(HUjoin$Feper, HUjoin$combo.x == "20-10"), HUjoin$Feper)
+```
+```{r}
+var.test(subset(HUjoin$Alper, HUjoin$combo.x == "20-10"), HUjoin$Alper)
+t.test(subset(HUjoin$Alper, HUjoin$combo.x == "20-10"), HUjoin$Alper)
+wilcox.test(subset(HUjoin$Alper, HUjoin$combo.x == "20-10"), HUjoin$Alper)
+```
+```{r}
+var.test(subset(ESjoin$Feper, ESjoin$combo.x == "20-10"), ESjoin$Feper)
+t.test(subset(ESjoin$Feper, ESjoin$combo.x == "20-10"), ESjoin$Feper)
+wilcox.test(subset(ESjoin$Feper, ESjoin$combo.x == "20-10"), ESjoin$Feper)
+```
+```{r}
+var.test(subset(ESjoin$Alper, ESjoin$combo.x == "20-10"), ESjoin$Alper)
+t.test(subset(ESjoin$Alper, ESjoin$combo.x == "20-10"), ESjoin$Alper)
+wilcox.test(subset(ESjoin$Alper, ESjoin$combo.x == "20-10"), ESjoin$Alper)
+```
+```{r}
+var.test(subset(ESjoin$Pbper, ESjoin$combo.x == "20-10"), ESjoin$Pbper)
+t.test(subset(ESjoin$Pbper, ESjoin$combo.x == "20-10"), ESjoin$Pbper)
+wilcox.test(subset(ESjoin$Pbper, ESjoin$combo.x == "20-10"), ESjoin$Pbper)
+```
+
+```{r}
+var.test(subset(MonHU0$Pb, MonHU0$combo == "20-10"), MonHU0$Pb)
+t.test(subset(MonHU0$Pb, MonHU0$combo == "20-10"), MonHU0$Pb)
+wilcox.test(subset(MonHU0$Pb, MonHU0$combo == "20-10"), MonHU0$Pb)
+```
+```{r}
+var.test(subset(MonHU0$Fe, MonHU0$combo == "20-10"), MonHU0$Fe)
+t.test(subset(MonHU0$Fe, MonHU0$combo == "20-10"), MonHU0$Fe)
+wilcox.test(subset(MonHU0$Fe, MonHU0$combo == "20-10"), MonHU0$Fe)
+```
+
+```{r}
+var.test(subset(MonHU0$Al, MonHU0$combo == "20-10"), MonHU0$Al)
+t.test(subset(MonHU0$Al, MonHU0$combo == "20-10"), MonHU0$Al)
+wilcox.test(subset(MonHU0$Al, MonHU0$combo == "20-10"), MonHU0$Al)
+```
+```{r}
+var.test(subset(MonES0$Pb, MonES0$combo == "20-10"), MonES0$Pb)
+t.test(subset(MonES0$Pb, MonES0$combo == "20-10"), MonES0$Pb)
+wilcox.test(subset(MonES0$Pb, MonES0$combo == "20-10"), MonES0$Pb)
+```
+```{r}
+var.test(subset(MonES0$Fe, MonES0$combo == "20-10"), MonES0$Fe)
+t.test(subset(MonES0$Fe, MonES0$combo == "20-10"), MonES0$Fe)
+wilcox.test(subset(MonES0$Fe, MonES0$combo == "20-10"), MonES0$Fe)
+```
+```{r}
+var.test(subset(MonES0$Al, MonES0$combo == "20-10"), MonES0$Al)
+t.test(subset(MonES0$Al, MonES0$combo == "20-10"), MonES0$Al)
+wilcox.test(subset(MonES0$Al, MonES0$combo == "20-10"), MonES0$Al)
+```
+```{r}
+var.test(subset(HUjoin$Pbper, HUjoin$mo.x == "10"), HUjoin$Pbper)
+t.test(subset(HUjoin$Pbper, HUjoin$mo.x == "10"), HUjoin$Pbper)
+wilcox.test(subset(HUjoin$Pbper, HUjoin$mo.x == "10"), HUjoin$Pbper)
+```
+```{r}
+var.test(subset(HUjoin$Feper, HUjoin$mo.x == "10"), HUjoin$Feper)
+t.test(subset(HUjoin$Feper, HUjoin$mo.x == "10"), HUjoin$Feper)
+wilcox.test(subset(HUjoin$Feper, HUjoin$mo.x == "10"), HUjoin$Feper)
+```
+```{r}
+var.test(subset(HUjoin$Alper, HUjoin$mo.x == "10"), HUjoin$Alper)
+t.test(subset(HUjoin$Alper, HUjoin$mo.x == "10"), HUjoin$Alper)
+wilcox.test(subset(HUjoin$Alper, HUjoin$mo.x == "10"), HUjoin$Alper)
+```
+```{r}
+var.test(subset(ESjoin$Feper, ESjoin$mo.x == "10"), ESjoin$Feper)
+t.test(subset(ESjoin$Feper, ESjoin$mo.x == "10"), ESjoin$Feper)
+wilcox.test(subset(ESjoin$Feper, ESjoin$mo.x == "10"), ESjoin$Feper)
+```
+```{r}
+var.test(subset(ESjoin$Alper, ESjoin$mo.x == "10"), ESjoin$Alper)
+t.test(subset(ESjoin$Alper, ESjoin$mo.x == "10"), ESjoin$Alper)
+wilcox.test(subset(ESjoin$Alper, ESjoin$mo.x == "10"), ESjoin$Alper)
+```
+```{r}
+var.test(subset(ESjoin$Pbper, ESjoin$mo.x == "10"), ESjoin$Pbper)
+t.test(subset(ESjoin$Pbper, ESjoin$mo.x == "10"), ESjoin$Pbper)
+wilcox.test(subset(ESjoin$Pbper, ESjoin$mo.x == "10"), ESjoin$Pbper)
+```
+
+```{r}
+var.test(subset(MonHU0$Pb, MonHU0$mo == "10"), MonHU0$Pb)
+t.test(subset(MonHU0$Pb, MonHU0$mo == "10"), MonHU0$Pb)
+wilcox.test(subset(MonHU0$Pb, MonHU0$mo == "10"), MonHU0$Pb)
+```
+```{r}
+var.test(subset(MonHU0$Fe, MonHU0$mo == "10"), MonHU0$Fe)
+t.test(subset(MonHU0$Fe, MonHU0$mo == "10"), MonHU0$Fe)
+wilcox.test(subset(MonHU0$Fe, MonHU0$mo == "10"), MonHU0$Fe)
+```
+
+```{r}
+var.test(subset(MonHU0$Al, MonHU0$mo == "10"), MonHU0$Al)
+t.test(subset(MonHU0$Al, MonHU0$mo == "10"), MonHU0$Al)
+wilcox.test(subset(MonHU0$Al, MonHU0$mo == "10"), MonHU0$Al)
+```
+```{r}
+var.test(subset(MonES0$Pb, MonES0$mo == "10"), MonES0$Pb)
+t.test(subset(MonES0$Pb, MonES0$mo == "10"), MonES0$Pb)
+wilcox.test(subset(MonES0$Pb, MonES0$mo == "10"), MonES0$Pb)
+```
+```{r}
+var.test(subset(MonES0$Fe, MonES0$mo == "10"), MonES0$Fe)
+t.test(subset(MonES0$Fe, MonES0$mo == "10"), MonES0$Fe)
+wilcox.test(subset(MonES0$Fe, MonES0$mo == "10"), MonES0$Fe)
+```
+```{r}
+var.test(subset(MonES0$Al, MonES0$mo == "10"), MonES0$Al)
+t.test(subset(MonES0$Al, MonES0$mo == "10"), MonES0$Al)
+wilcox.test(subset(MonES0$Al, MonES0$mo == "10"), MonES0$Al)
+```
+```{r}
+var.test(HUjoin$Alper, ESjoin$Alper)
+t.test(HUjoin$Alper, ESjoin$Alper)
+wilcox.test(HUjoin$Alper, ESjoin$Alper)
+```
+```{r}
+var.test(HUjoin$Feper, ESjoin$Feper)
+t.test(HUjoin$Feper, ESjoin$Feper)
+wilcox.test(HUjoin$Feper, ESjoin$Feper)
+```
+
+```{r}
+var.test(HUjoin$Pbper, ESjoin$Pbper)
+t.test(HUjoin$Pbper, ESjoin$Pbper)
+wilcox.test(HUjoin$Pbper, ESjoin$Pbper)
+```
+
+```{r}
+var.test(subset(MonES0$Al, MonES0$Yr == "20"), subset(MonHU0$Al, MonHU0$Yr == "20"))
+wilcox.test(subset(MonES0$Al, MonES0$Yr == "20"), subset(MonHU0$Al, MonHU0$Yr == "20"))
+t.test(subset(MonES0$Al, MonES0$Yr == "20"), subset(MonHU0$Al, MonHU0$Yr == "20"))
+```
+```{r}
+var.test(subset(MonES0$Pb, MonES0$Yr == "20"), subset(MonHU0$Pb, MonHU0$Yr == "20"))
+wilcox.test(subset(MonES0$Pb, MonES0$Yr == "20"), subset(MonHU0$Pb, MonHU0$Yr == "20"))
+t.test(subset(MonES0$Pb, MonES0$Yr == "20"), subset(MonHU0$Pb, MonHU0$Yr == "20"))
+```
+
+```{r}
+var.test(subset(MonES0$Fe, MonES0$Yr == "20"), subset(MonHU0$Fe, MonHU0$Yr == "20"))
+wilcox.test(subset(MonES0$Fe, MonES0$Yr == "20"), subset(MonHU0$Fe, MonHU0$Yr == "20"))
+t.test(subset(MonES0$Fe, MonES0$Yr == "20"), subset(MonHU0$Fe, MonHU0$Yr == "20"))
+```
+```{r}
+var.test(subset(PMHU$PM2.5, PMHU$Yr == "20"), subset(PMES$PM2.5, PMES$Yr == "20"))
+wilcox.test(subset(PMHU$PM2.5, PMHU$Yr == "20"), subset(PMES$PM2.5, PMES$Yr == "20"))
+t.test(subset(PMHU$PM2.5, PMHU$Yr == "20"), subset(PMES$PM2.5, PMES$Yr == "20"))
+```
+```{r}
+var.test(subset(ESjoin$Pbper, ESjoin$Yr.x == "20"), subset(HUjoin$Pbper, HUjoin$Yr.x == "20"))
+wilcox.test(subset(ESjoin$Pbper, ESjoin$Yr.x == "20"), subset(HUjoin$Pbper, HUjoin$Yr.x == "20"))
+t.test(subset(ESjoin$Pbper, ESjoin$Yr.x == "20"), subset(HUjoin$Pbper, HUjoin$Yr.x == "20"))
+```
+```{r}
+var.test(subset(ESjoin$Feper, ESjoin$Yr.x == "20"), subset(HUjoin$Feper, HUjoin$Yr.x == "20"))
+wilcox.test(subset(ESjoin$Feper, ESjoin$Yr.x == "20"), subset(HUjoin$Feper, HUjoin$Yr.x == "20"))
+t.test(subset(ESjoin$Feper, ESjoin$Yr.x == "20"), subset(HUjoin$Feper, HUjoin$Yr.x == "20"))
+
+median(subset(ESjoin$Feper, ESjoin$Yr.x == "20"))
+median(subset(HUjoin$Feper, HUjoin$Yr.x == "20"))
+
+```
+
+```{r}
+var.test(subset(ESjoin$Alper, ESjoin$Yr.x == "20"), subset(HUjoin$Alper, HUjoin$Yr.x == "20"))
+wilcox.test(subset(ESjoin$Alper, ESjoin$Yr.x == "20"), subset(HUjoin$Alper, HUjoin$Yr.x == "20"))
+t.test(subset(ESjoin$Alper, ESjoin$Yr.x == "20"), subset(HUjoin$Alper, HUjoin$Yr.x == "20"))
+```
+
+```{r}
+median(subset(PMHU$PM2.5, PMHU$mo == "10"))
+median(PMHU$PM2.5)
+```
+
+```{r}
+median(subset(PMES$PM2.5, PMES$mo == "10"))
+median(PMES$PM2.5)
+
+median(subset(MonHU0$Pb, MonHU0$mo == "10"), na.rm=TRUE)
+median(MonHU0$Pb, na.rm=TRUE)
+
+median(subset(PMBM$PM2.5, PMBM$mo == "10"), na.rm=TRUE)
+median(subset(PMBM$PM2.5, PMBM$mo == "09"), na.rm=TRUE)
+
+```
+```{r}
+var.test(subset(PM10$PM10, PM10$yr == "20"), PM10$PM10)
+wilcox.test(subset(PM10$PM10, PM10$yr == "20"), PM10$PM10)
+t.test(subset(PM10$PM10, PM10$yr == "20"), PM10$PM10)
+```
+```{r}
+var.test(subset(PM10$PM10, PM10$mo == "09"), PM10$PM10)
+wilcox.test(subset(PM10$PM10, PM10$mo == "09"), PM10$PM10)
+t.test(subset(PM10$PM10, PM10$mo == "09"), PM10$PM10)
+```
+
+```{r}
+var.test(subset(PM10$PM10, PM10$mo == "10"), PM10$PM10)
+wilcox.test(subset(PM10$PM10, PM10$mo == "10"), PM10$PM10)
+t.test(subset(PM10$PM10, PM10$mo == "10"), PM10$PM10)
+```
+```{r}
+var.test(subset(PM10$PM10, PM10$mo == "09"), subset(PM10$PM10, PM10$mo== "10"))
+wilcox.test(subset(PM10$PM10, PM10$mo == "09"), subset(PM10$PM10, PM10$mo== "10"))
+t.test(subset(PM10$PM10, PM10$mo == "09"), subset(PM10$PM10, PM10$mo== "10"))
+```
+```{r}
+mean(subset(PM10$PM10, PM10$mo == "09"))
+mean(subset(PM10$PM10, PM10$mo == "10"), na.rm=TRUE)
+median(subset(PM10$PM10, PM10$mo == "09"))
+median(subset(PM10$PM10, PM10$mo == "10"), na.rm=TRUE)
+length(subset(PM10$PM10, PM10$mo == "10"))
+length(subset(PM10$PM10, PM10$mo == "09"))
+mean(subset(PM10$PM10, PM10$yr == "20"), na.rm=TRUE)
+sd(subset(PM10$PM10, PM10$yr == "20"), na.rm=TRUE)
+median(subset(PM10$PM10, PM10$yr == "20"), na.rm=TRUE)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

@@ -1,0 +1,133 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+MonWebs <- read.csv("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\Air_Mon_Recalculate.csv")
+
+Bmore <- read.csv("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\FrontiersInEcologyPaper\\R2_Recalculate.csv")
+
+Mon2020 <- read.csv("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\Monitor2020wRatios.csv")
+
+R1_R2 <- read.csv("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\R2_R1_final.csv")
+
+full_bmore <- read.csv("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\R2_Recalculate_full.csv")
+
+R1 <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/E_R1_Normalized.csv")
+weights <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/Fullweights.csv")
+```
+
+```{r}
+shapiro.test(full_bmore$Al_per_day)
+shapiro.test(full_bmore$Pb_per_day)
+shapiro.test(full_bmore$Fe_per_day)
+fligner.test(full_bmore$Al_per_day~full_bmore$Square)
+fligner.test(full_bmore$Pb_per_day~full_bmore$Square)
+fligner.test(full_bmore$Fe_per_day~full_bmore$Square)
+```
+
+```{r}
+kruskal.test(full_bmore$Al_per_day~as.factor(full_bmore$Square))
+kruskal.test(full_bmore$Pb_per_day~as.factor(full_bmore$Square))
+kruskal.test(full_bmore$Fe_per_day~as.factor(full_bmore$Square))
+```
+
+```{r}
+Alsq <- aov(full_bmore$Al_per_day~as.factor(full_bmore$Square))
+Pbsq <- aov(full_bmore$Pb_per_day~as.factor(full_bmore$Square))
+Fesq <- aov(full_bmore$Fe_per_day~as.factor(full_bmore$Square))
+summary(Alsq)
+summary(Pbsq)
+summary(Fesq)
+```
+
+```{r}
+cor.test(as.numeric(Bmore$Al), Bmore$mg.ml, method="spearman")
+cor.test(as.numeric(Bmore$Pb), Bmore$mg.ml, method="spearman")
+cor.test(as.numeric(Bmore$Fe), Bmore$mg.ml, method="spearman")
+cor.test(R1$Al, R1$Weight.mL, method="spearman")
+cor.test(R1$Pb, R1$Weight.mL, method="spearman")
+cor.test(R1$Fe, R1$Weight.mL, method="spearman")
+cor.test(R1$Cr, R1$Weight.mL, method="spearman")
+cor.test(R1$Cu, R1$Weight.mL, method="spearman")
+cor.test(R1$Zn, R1$Weight.mL, method="spearman")
+cor.test(R1$Ni, R1$Weight.mL, method="spearman")
+```
+
+```{r}
+var.test(R1_R2$AlWeb, R1_R2$Al_Percent)
+var.test(R1_R2$PbWeb, R1_R2$Pb_Percent)
+var.test(R1_R2$FeWeb, R1_R2$Fe_Percent)
+var.test(weights$Weight~weights$Round)
+```
+
+```{r}
+wilcox.test(R1_R2$Al_Percent, R1_R2$AlWeb)
+wilcox.test(R1_R2$Pb_Percent, R1_R2$PbWeb)
+wilcox.test(R1_R2$Fe_Percent, R1_R2$FeWeb)
+wilcox.test(subset(weights$Weight, weights$Round == "R1"), subset(weights$Weight, weights$Round == "R2"))
+```
+```{r}
+t.test(R1_R2$Al_Percent, R1_R2$AlWeb)
+t.test(R1_R2$Pb_Percent, R1_R2$PbWeb)
+t.test(R1_R2$Fe_Percent, R1_R2$FeWeb)
+t.test(subset(weights$Weight, weights$Round == "R1"), subset(weights$Weight, weights$Round == "R2"))
+```
+```{r}
+fligner.test(Bmore$Al_per_day~Bmore$Neighborhood)
+fligner.test(Bmore$Fe_per_day~Bmore$Neighborhood)
+fligner.test(Bmore$Pb_per_day~Bmore$Neighborhood)
+```
+```{r}
+wilcox.test(Bmore$Al_per_day~Bmore$Neighborhood)
+wilcox.test(Bmore$Fe_per_day~Bmore$Neighborhood)
+wilcox.test(Bmore$Pb_per_day~Bmore$Neighborhood)
+```
+
+```{r}
+t.test(Bmore$Al_per_day~Bmore$Neighborhood)
+t.test(Bmore$Fe_per_day~Bmore$Neighborhood)
+t.test(Bmore$Pb_per_day~Bmore$Neighborhood)
+```
+
+Spatial tests
+```{r}
+library(sf)
+library(sp)
+library(spdep)
+library(spatialreg)
+```
+```{r}
+R2<- st_read("C:\\Users\\nrast\\OneDrive\\Documents\\Desktop\\Spatial_Thesis\\Spatial_Data\\StudySqsFULL.shp")
+```
+```{r}
+R2.nb <- poly2nb(R2, queen=TRUE)
+R2.nb
+R2weights.lw <- nb2listw(R2.nb, style="W", zero.policy=F)
+R2weights.lw
+```
+
+```{r}
+moran.test(R2$AlPerc, R2weights.lw, na.action=na.omit)
+```
+
+
+```{r}
+moran.test(as.numeric(R2$FePerc), R2weights.lw, na.action=na.omit)
+```
+
+```{r}
+moran.test(as.numeric(R2$PbPerc), R2weights.lw, na.action=na.omit)
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

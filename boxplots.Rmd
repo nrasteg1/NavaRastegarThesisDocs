@@ -1,0 +1,123 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+R2_comax <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/R2_full_cormax.csv")
+Air <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/Air_Mon_Recalculate.csv")
+R2 <-read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/R2_Recalculate.csv")
+R1 <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/E_R1_Normalized.csv")
+```
+
+```{r}
+library(ggplot2)
+library(Hmisc)
+library(gtools)
+library(corrplot)
+
+R2$Square <- as.factor(R2$Square)
+
+give.n <- function(x){
+return(c(y = median(x)*.9, label = length(x))) 
+}
+
+jpeg("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\alNB.jpg", width = 1000, height = 600)
+ggplot(R2, aes(x=Neighborhood, y=logit(Al_per_day/100)))+ 
+   geom_boxplot(fill="cornflowerblue") + 
+    stat_summary(fun.data = give.n, geom = "text", fun = median,     position=position_dodge(.75), size=10)+
+    ylab("% Al per Day (logit transformed)")+
+    theme(text=element_text(size=35,  family="TT Arial"))
+dev.off()
+```
+```{r}
+jpeg("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\pbNB.jpg", width = 1000, height = 600)
+ggplot(R2, aes(x=Neighborhood, y=logit(Pb_per_day/100)))+ 
+   geom_boxplot(fill="chartreuse3") + 
+    stat_summary(fun.data = give.n, geom = "text", fun = median,     position=position_dodge(.75), size=10)+
+    ylab("% Pb per Day (logit transformed)")+
+    theme(text=element_text(size=35,  family="TT Arial"))
+dev.off()
+```
+```{r}
+jpeg("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\feNB.jpg", width = 1000, height = 600)
+ggplot(R2, aes(x=Neighborhood, y=logit(Fe_per_day/100)))+ 
+   geom_boxplot(fill="brown2") + 
+    stat_summary(fun.data = give.n, geom = "text", fun = median,     position=position_dodge(.7), size=10)+
+    ylab("% Fe per Day (logit transformed)")+
+    theme(text=element_text(size=35,  family="TT Arial"))
+dev.off()
+```
+```{r}
+jpeg("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\alair.jpg", width = 1000, height = 600)
+ggplot(Air, aes(x=Area, y=logit(Al_perc_day/100)))+ 
+   geom_boxplot(fill="cornflowerblue") + 
+    stat_summary(fun.data = give.n, geom = "text", fun = median,     position=position_dodge(.7), size=10)+
+    ylab("% Al per Day (logit transformed)")+
+    theme(text=element_text(size=35,  family="TT Arial"))
+dev.off()
+```
+```{r}
+jpeg("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\pbair.jpg", width = 1000, height = 600)
+ggplot(Air, aes(x=Area, y=logit(Pb_Perc_Day/100)))+ 
+   geom_boxplot(fill="chartreuse3") + 
+    stat_summary(fun.data = give.n, geom = "text", fun = median,     position=position_dodge(.7), size=10)+
+    ylab("% Pb per Day (logit transformed)")+
+    theme(text=element_text(size=35,  family="TT Arial"))
+dev.off()
+```
+```{r}
+jpeg("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\feair.jpg", width = 1000, height = 600)
+ggplot(Air, aes(x=Area, y=logit(Fe_Perc_Day/100)))+ 
+   geom_boxplot(fill="brown2") + 
+    stat_summary(fun.data = give.n, geom = "text", fun = median,     position=position_dodge(.7), size=10)+
+    ylab("% Fe per Day (logit transformed)")+
+    theme(text=element_text(size=35,  family="TT Arial"))
+dev.off()
+```
+```{r}
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+```
+
+```{r}
+res2<-rcorr(as.matrix(R2_comax[,2:14]), type="spearman")
+R2Cormatrix <-flattenCorrMatrix(res2$r, res2$P)
+
+res <- cor(R2_comax[,2:14], method=c("spearman"), use = "complete.obs")
+corrplot(res2$r, type = "upper", 
+         tl.col = "black",  tl.srt = 45, p.mat = res2$p, sig.level = 0.05, insig = "label_sig")
+```
+
+```{r}
+cor.test(R2_comax$Fe_per_day, R2_comax$AADT_max, method="spearman")
+```
+```{r}
+cor.test(R2_comax$Fe_per_day, R2_comax$AADT_mean, method="spearman")
+
+```
+```{r}
+cor.test(R2_comax$Fe_per_day, R2_comax$AADT_sum, method="spearman")
+```
+
+
+```{r}
+write.csv(R2Cormatrix,"C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/R2CorFull.csv", row.names = FALSE)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

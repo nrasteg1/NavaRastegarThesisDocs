@@ -1,0 +1,390 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+MonES0 <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/MonES0.csv")
+MonHU0<- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/MonHU0.csv")
+PMBM <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/BMPM.csv")
+PMES <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/ESPM.csv")
+PMHU <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/HUPM.csv")
+HUjoin <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/HUjoin.csv")
+ESjoin<- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/ESjoin.csv")
+Air <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/Air_Mon_Recalculate.csv")
+R2 <-read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/R2_Recalculate.csv")
+ER1 <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/E_R1_normalized.csv")
+RR1 <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/R_R1_normalized.csv")
+PM10 <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/PM10Bmore.csv")
+
+PMBM$PM2.5 <- as.numeric(PMBM$PM2.5)
+PMHU$PM2.5 <- as.numeric(PMHU$PM2.5)
+PMES$PM2.5 <- as.numeric(PMES$PM2.5)
+PMES$mo <- str_sub(PMES$Date, 6, 7)
+PMHU$mo <- str_sub(PMHU$Date, 6, 7)
+PMBM$mo <- str_sub(PMBM$Date, 6, 7)
+PMES$Yr <- str_sub(PMES$Date, 3, 4)
+PMHU$Yr <- str_sub(PMHU$Date, 3, 4)
+PMBM$Yr <- str_sub(PMBM$Date, 3, 4)
+names(MonES0)[names(MonES0) == "ï..Date"] <- "Date"
+names(MonHU0)[names(MonHU0) == "ï..Date"] <- "Date"
+MonES0$mo <- str_sub(MonES0$Date, 6, 7)
+MonHU0$mo <- str_sub(MonHU0$Date, 6, 7)
+```
+
+```{r}
+median(MonES0$Fe, na.rm=TRUE)
+mean(MonES0$Fe, na.rm=TRUE)
+sd(MonES0$Fe, na.rm=TRUE)
+length(MonES0$Fe[!is.na(MonES0$Fe)])
+median(MonES0$Pb, na.rm=TRUE)
+mean(MonES0$Pb, na.rm=TRUE)
+sd(MonES0$Pb, na.rm=TRUE)
+length(MonES0$Pb[!is.na(MonES0$Pb)])
+median(MonES0$Al, na.rm=TRUE)
+mean(MonES0$Al, na.rm=TRUE)
+sd(MonES0$Al, na.rm=TRUE)
+length(MonES0$Al[!is.na(MonES0$Al)])
+```
+
+```{r}
+median(MonHU0$Fe, na.rm=TRUE)
+mean(MonHU0$Fe, na.rm=TRUE)
+sd(MonHU0$Fe, na.rm=TRUE)
+length(MonHU0$Fe[!is.na(MonHU0$Fe)])
+median(MonHU0$Pb, na.rm=TRUE)
+mean(MonHU0$Pb, na.rm=TRUE)
+sd(MonHU0$Pb, na.rm=TRUE)
+length(MonHU0$Pb[!is.na(MonHU0$Pb)])
+median(MonHU0$Al, na.rm=TRUE)
+mean(MonHU0$Al, na.rm=TRUE)
+sd(MonHU0$Al, na.rm=TRUE)
+length(MonHU0$Pb[!is.na(MonHU0$Pb)])
+```
+
+```{r}
+mean(PMBM$PM2.5, na.rm=TRUE)
+median(PMBM$PM2.5, na.rm=TRUE)
+sd(PMBM$PM2.5, na.rm=TRUE)
+length(PMBM$PM2.5[!is.na(PMBM$PM2.5)])
+mean(PMHU$PM2.5, na.rm=TRUE)
+median(PMHU$PM2.5, na.rm=TRUE)
+sd(PMHU$PM2.5, na.rm=TRUE)
+length(PMHU$PM2.5[!is.na(PMHU$PM2.5)])
+mean(PMES$PM2.5, na.rm=TRUE)
+median(PMES$PM2.5, na.rm=TRUE)
+sd(PMES$PM2.5, na.rm=TRUE)
+length(PMES$PM2.5[!is.na(PMES$PM2.5)])
+```
+```{r}
+mean(HUjoin$Pbper, na.rm=TRUE)
+median(HUjoin$Pbper, na.rm=TRUE)
+sd(HUjoin$Pbper, na.rm=TRUE)
+length(HUjoin$Pbper[!is.na(HUjoin$Pbper)])
+mean(HUjoin$Feper, na.rm=TRUE)
+median(HUjoin$Feper, na.rm=TRUE)
+sd(HUjoin$Feper, na.rm=TRUE)
+length(HUjoin$Feper[!is.na(HUjoin$Feper)])
+mean(HUjoin$Alper, na.rm=TRUE)
+median(HUjoin$Alper, na.rm=TRUE)
+sd(HUjoin$Alper, na.rm=TRUE)
+length(HUjoin$Alper[!is.na(HUjoin$Alper)])
+```
+
+```{r}
+mean(ESjoin$Pbper, na.rm=TRUE)
+median(ESjoin$Pbper, na.rm=TRUE)
+sd(ESjoin$Pbper, na.rm=TRUE)
+mean(ESjoin$Feper, na.rm=TRUE)
+median(ESjoin$Feper, na.rm=TRUE)
+sd(ESjoin$Feper, na.rm=TRUE)
+mean(ESjoin$Alper, na.rm=TRUE)
+median(ESjoin$Alper, na.rm=TRUE)
+sd(ESjoin$Alper, na.rm=TRUE)
+length(ESjoin$Pbper[!is.na(ESjoin$Pbper)])
+```
+
+```{r}
+mean(subset(PMHU$PM2.5, PMHU$mo == "10"), na.rm=TRUE)
+median(subset(PMHU$PM2.5, PMHU$mo == "10"), na.rm=TRUE)
+sd(subset(PMHU$PM2.5, PMHU$mo == "10"), na.rm=TRUE)
+length(subset(PMHU$PM2.5, PMHU$mo == "10"))
+mean(subset(PMES$PM2.5, PMES$mo == "10"), na.rm=TRUE)
+median(subset(PMES$PM2.5, PMES$mo == "10"), na.rm=TRUE)
+sd(subset(PMES$PM2.5, PMES$mo == "10"), na.rm=TRUE)
+length(subset(PMES$PM2.5, PMES$mo == "10"))
+mean(subset(PMBM$PM2.5, PMBM$mo == "10"), na.rm=TRUE)
+median(subset(PMBM$PM2.5, PMBM$mo == "10"), na.rm=TRUE)
+sd(subset(PMBM$PM2.5, PMBM$mo == "10"), na.rm=TRUE)
+length(subset(PMBM$PM2.5, PMBM$mo == "10"))
+mean(subset(PMBM$PM2.5, PMBM$mo == "09"), na.rm=TRUE)
+median(subset(PMBM$PM2.5, PMBM$mo == "09"), na.rm=TRUE)
+sd(subset(PMBM$PM2.5, PMBM$mo == "09"), na.rm=TRUE)
+length(subset(PMBM$PM2.5, PMBM$mo == "09"))
+```
+
+```{r}
+mean(subset(PMHU$PM2.5, PMHU$Yr == "20"), na.rm=TRUE)
+median(subset(PMHU$PM2.5, PMHU$Yr == "20"), na.rm=TRUE)
+length(subset(PMHU$PM2.5, PMHU$Yr == "20"))
+sd(subset(PMHU$PM2.5, PMHU$Yr == "20"), na.rm=TRUE)
+mean(subset(PMES$PM2.5, PMES$Yr == "20"), na.rm=TRUE)
+median(subset(PMES$PM2.5, PMES$Yr == "20"), na.rm=TRUE)
+sd(subset(PMES$PM2.5, PMES$Yr == "20"), na.rm=TRUE)
+length(subset(PMES$PM2.5, PMES$Yr == "20"))
+mean(subset(PMBM$PM2.5, PMBM$Yr == "19"), na.rm=TRUE)
+median(subset(PMBM$PM2.5, PMBM$Yr == "19"), na.rm=TRUE)
+sd(subset(PMBM$PM2.5, PMBM$Yr == "19"), na.rm=TRUE)
+length(subset(PMBM$PM2.5, PMBM$Yr == "19"))
+```
+
+```{r}
+mean(subset(ESjoin$Pbper, ESjoin$Yr.y == "20"), na.rm=TRUE)
+median(subset(ESjoin$Pbper, ESjoin$Yr.y == "20"), na.rm=TRUE)
+sd(subset(ESjoin$Pbper, ESjoin$Yr.y == "20"), na.rm=TRUE)
+length(subset(ESjoin$Pbper, ESjoin$Yr.y == "20"))
+mean(subset(ESjoin$Feper, ESjoin$Yr.y == "20"), na.rm=TRUE)
+median(subset(ESjoin$Feper, ESjoin$Yr.y == "20"), na.rm=TRUE)
+sd(subset(ESjoin$Feper, ESjoin$Yr.y == "20"), na.rm=TRUE)
+length(subset(ESjoin$Feper, ESjoin$Yr.y == "20"))
+mean(subset(ESjoin$Alper, ESjoin$Yr.y == "20"), na.rm=TRUE)
+median(subset(ESjoin$Alper, ESjoin$Yr.y == "20"), na.rm=TRUE)
+sd(subset(ESjoin$Alper, ESjoin$Yr.y == "20"), na.rm=TRUE)
+length(subset(ESjoin$Alper, ESjoin$Yr.y == "20"))
+```
+```{r}
+mean(subset(HUjoin$Pbper, HUjoin$Yr.y == "20"), na.rm=TRUE)
+median(subset(HUjoin$Pbper, HUjoin$Yr.y == "20"), na.rm=TRUE)
+sd(subset(HUjoin$Pbper, HUjoin$Yr.y == "20"), na.rm=TRUE)
+length(subset(HUjoin$Pbper, HUjoin$Yr.y == "20"))
+mean(subset(HUjoin$Feper, HUjoin$Yr.y == "20"), na.rm=TRUE)
+median(subset(HUjoin$Feper, HUjoin$Yr.y == "20"), na.rm=TRUE)
+sd(subset(HUjoin$Feper, HUjoin$Yr.y == "20"), na.rm=TRUE)
+length(subset(HUjoin$Feper, HUjoin$Yr.y == "20"))
+mean(subset(HUjoin$Alper, HUjoin$Yr.y == "20"), na.rm=TRUE)
+median(subset(HUjoin$Alper, HUjoin$Yr.y == "20"), na.rm=TRUE)
+sd(subset(HUjoin$Alper, HUjoin$Yr.y == "20"), na.rm=TRUE)
+length(subset(HUjoin$Alper, HUjoin$Yr.y == "20"))
+```
+```{r}
+mean(subset(MonHU0$Pb, MonHU0$Yr == "20"), na.rm=TRUE)
+median(subset(MonHU0$Pb, MonHU0$Yr == "20"), na.rm=TRUE)
+sd(subset(MonHU0$Pb, MonHU0$Yr == "20"), na.rm=TRUE)
+length(subset(MonHU0$Pb, MonHU0$Yr == "20"))
+mean(subset(MonHU0$Fe, MonHU0$Yr == "20"), na.rm=TRUE)
+median(subset(MonHU0$Fe, MonHU0$Yr == "20"), na.rm=TRUE)
+sd(subset(MonHU0$Fe, MonHU0$Yr == "20"), na.rm=TRUE)
+length(subset(MonHU0$Fe, MonHU0$Yr == "20"))
+mean(subset(MonHU0$Al, MonHU0$Yr == "20"), na.rm=TRUE)
+median(subset(MonHU0$Al, MonHU0$Yr == "20"), na.rm=TRUE)
+sd(subset(MonHU0$Al, MonHU0$Yr == "20"), na.rm=TRUE)
+length(subset(MonHU0$Al, MonHU0$Yr == "20"))
+```
+
+```{r}
+mean(subset(MonES0$Pb, MonES0$Yr == "20"), na.rm=TRUE)
+median(subset(MonES0$Pb, MonES0$Yr == "20"), na.rm=TRUE)
+sd(subset(MonES0$Pb, MonES0$Yr == "20"), na.rm=TRUE)
+length(subset(MonES0$Pb, MonES0$Yr == "20"))
+mean(subset(MonES0$Fe, MonES0$Yr == "20"), na.rm=TRUE)
+median(subset(MonES0$Fe, MonES0$Yr == "20"), na.rm=TRUE)
+sd(subset(MonES0$Fe, MonES0$Yr == "20"), na.rm=TRUE)
+length(subset(MonES0$Fe, MonES0$Yr == "20"))
+mean(subset(MonES0$Al, MonES0$Yr == "20"), na.rm=TRUE)
+median(subset(MonES0$Al, MonES0$Yr == "20"), na.rm=TRUE)
+sd(subset(MonES0$Al, MonES0$Yr == "20"), na.rm=TRUE)
+length(subset(MonES0$Al, MonES0$Yr == "20"))
+```
+```{r}
+mean(subset(MonES0$Pb, MonES0$mo == "10"), na.rm=TRUE)
+median(subset(MonES0$Pb, MonES0$mo == "10"), na.rm=TRUE)
+sd(subset(MonES0$Pb, MonES0$mo == "10"), na.rm=TRUE)
+length(subset(MonES0$Pb, MonES0$mo == "10"))
+mean(subset(MonES0$Fe, MonES0$mo == "10"), na.rm=TRUE)
+median(subset(MonES0$Fe, MonES0$mo == "10"), na.rm=TRUE)
+sd(subset(MonES0$Fe, MonES0$mo == "10"), na.rm=TRUE)
+length(subset(MonES0$Fe, MonES0$mo == "10"))
+mean(subset(MonES0$Al, MonES0$mo == "10"), na.rm=TRUE)
+median(subset(MonES0$Al, MonES0$mo == "10"), na.rm=TRUE)
+sd(subset(MonES0$Al, MonES0$mo == "10"), na.rm=TRUE)
+length(subset(MonES0$Al, MonES0$mo == "10"))
+```
+```{r}
+mean(subset(MonHU0$Pb, MonHU0$mo == "10"), na.rm=TRUE)
+median(subset(MonHU0$Pb, MonHU0$mo == "10"), na.rm=TRUE)
+sd(subset(MonHU0$Pb, MonHU0$mo == "10"), na.rm=TRUE)
+length(subset(MonHU0$Pb, MonHU0$mo == "10"))
+mean(subset(MonHU0$Fe, MonHU0$mo == "10"), na.rm=TRUE)
+median(subset(MonHU0$Fe, MonHU0$mo == "10"), na.rm=TRUE)
+sd(subset(MonHU0$Fe, MonHU0$mo == "10"), na.rm=TRUE)
+length(subset(MonHU0$Fe, MonHU0$mo == "10"))
+mean(subset(MonHU0$Al, MonHU0$mo == "10"), na.rm=TRUE)
+median(subset(MonHU0$Al, MonHU0$mo == "10"), na.rm=TRUE)
+sd(subset(MonHU0$Al, MonHU0$mo == "10"), na.rm=TRUE)
+length(subset(MonHU0$Al, MonHU0$mo == "10"))
+```
+
+```{r}
+mean(subset(ESjoin$Pbper, ESjoin$mo.y == "10"), na.rm=TRUE)
+median(subset(ESjoin$Pbper, ESjoin$mo.y == "10"), na.rm=TRUE)
+sd(subset(ESjoin$Pbper, ESjoin$mo.y == "10"), na.rm=TRUE)
+length(subset(ESjoin$Pbper, ESjoin$mo.y == "10"))
+mean(subset(ESjoin$Feper, ESjoin$mo.y == "10"), na.rm=TRUE)
+median(subset(ESjoin$Feper, ESjoin$mo.y == "10"), na.rm=TRUE)
+sd(subset(ESjoin$Feper, ESjoin$mo.y == "10"), na.rm=TRUE)
+length(subset(ESjoin$Feper, ESjoin$mo.y == "10"))
+mean(subset(ESjoin$Alper, ESjoin$mo.y == "10"), na.rm=TRUE)
+median(subset(ESjoin$Alper, ESjoin$mo.y == "10"), na.rm=TRUE)
+sd(subset(ESjoin$Alper, ESjoin$mo.y == "10"), na.rm=TRUE)
+length(subset(ESjoin$Alper, ESjoin$mo.y == "10"))
+```
+
+```{r}
+mean(subset(HUjoin$Pbper, HUjoin$mo.y == "10"), na.rm=TRUE)
+median(subset(HUjoin$Pbper, HUjoin$mo.y == "10"), na.rm=TRUE)
+sd(subset(HUjoin$Pbper, HUjoin$mo.y == "10"), na.rm=TRUE)
+length(subset(HUjoin$Pbper, HUjoin$mo.y == "10"))
+mean(subset(HUjoin$Feper, HUjoin$mo.y == "10"), na.rm=TRUE)
+median(subset(HUjoin$Feper, HUjoin$mo.y == "10"), na.rm=TRUE)
+sd(subset(HUjoin$Feper, HUjoin$mo.y == "10"), na.rm=TRUE)
+length(subset(HUjoin$Feper, HUjoin$mo.y == "10"))
+mean(subset(HUjoin$Alper, HUjoin$mo.y == "10"), na.rm=TRUE)
+median(subset(HUjoin$Alper, HUjoin$mo.y == "10"), na.rm=TRUE)
+sd(subset(HUjoin$Alper, HUjoin$mo.y == "10"), na.rm=TRUE)
+length(subset(HUjoin$Alper, HUjoin$mo.y == "10"))
+```
+
+```{r}
+mean(R2$Al_per_day)
+median(R2$Al_per_day)
+sd(R2$Al_per_day)
+length(R2$Al_per_day)
+mean(R2$Pb_per_day, na.rm = TRUE)
+median(R2$Pb_per_day, na.rm = TRUE)
+sd(R2$Pb_per_day, na.rm = TRUE)
+length(R2$Pb_per_day[!is.na(R2$Pb_per_day)])
+mean(R2$Fe_per_day, na.rm = TRUE)
+median(R2$Fe_per_day, na.rm = TRUE)
+sd(R2$Fe_per_day, na.rm = TRUE)
+length(R2$Fe_per_day[!is.na(R2$Fe_per_day)])
+```
+```{r}
+bk <- subset(R2, R2$Neighborhood == "BK")
+cb <- subset(R2, R2$Neighborhood == "CB")
+```
+
+```{r}
+mean(bk$Al_per_day)
+median(bk$Al_per_day)
+sd(bk$Al_per_day)
+length(bk$Al_per_day)
+mean(bk$Pb_per_day, na.rm = TRUE)
+median(bk$Pb_per_day, na.rm = TRUE)
+sd(bk$Pb_per_day, na.rm = TRUE)
+length(bk$Pb_per_day[!is.na(bk$Pb_per_day)])
+mean(bk$Fe_per_day, na.rm = TRUE)
+median(bk$Fe_per_day, na.rm = TRUE)
+sd(bk$Fe_per_day, na.rm = TRUE)
+length(bk$Fe_per_day[!is.na(bk$Fe_per_day)])
+```
+```{r}
+mean(cb$Al_per_day)
+median(cb$Al_per_day)
+sd(cb$Al_per_day)
+length(cb$Al_per_day)
+mean(cb$Pb_per_day, na.rm = TRUE)
+median(cb$Pb_per_day, na.rm = TRUE)
+sd(cb$Pb_per_day, na.rm = TRUE)
+length(cb$Pb_per_day[!is.na(cb$Pb_per_day)])
+mean(cb$Fe_per_day, na.rm = TRUE)
+median(cb$Fe_per_day, na.rm = TRUE)
+sd(cb$Fe_per_day, na.rm = TRUE)
+length(cb$Fe_per_day[!is.na(cb$Fe_per_day)])
+```
+```{r}
+hu <- subset(Air, Air$Area=="HU")
+es <- subset(Air, Air$Area=="ES")
+mean(es$Al_perc_day)
+median(es$Al_perc_day)
+sd(es$Al_perc_day)
+length(es$Al_perc_day)
+mean(es$Pb_Perc_Day, na.rm = TRUE)
+median(es$Pb_Perc_Day, na.rm = TRUE)
+sd(es$Pb_Perc_Day, na.rm = TRUE)
+length(es$Pb_Perc_Day[!is.na(es$Pb_Perc_Day)])
+mean(es$Fe_Perc_Day, na.rm = TRUE)
+median(es$Fe_Perc_Day, na.rm = TRUE)
+sd(es$Fe_Perc_Day, na.rm = TRUE)
+length(es$Fe_Perc_Day[!is.na(es$Fe_Perc_Day)])
+```
+```{r}
+mean(hu$Al_perc_day)
+median(hu$Al_perc_day)
+sd(hu$Al_perc_day)
+length(hu$Al_perc_day)
+mean(hu$Pb_Perc_Day, na.rm = TRUE)
+median(hu$Pb_Perc_Day, na.rm = TRUE)
+sd(hu$Pb_Perc_Day, na.rm = TRUE)
+length(hu$Pb_Perc_Day[!is.na(hu$Pb_Perc_Day)])
+mean(hu$Fe_Perc_Day, na.rm = TRUE)
+median(hu$Fe_Perc_Day, na.rm = TRUE)
+sd(hu$Fe_Perc_Day, na.rm = TRUE)
+length(hu$Fe_Perc_Day[!is.na(hu$Fe_Perc_Day)])
+```
+```{r}
+mean(as.numeric(RR1$Al_Percent), na.rm=TRUE)
+median(as.numeric(RR1$Al_Percent), na.rm=TRUE)
+sd(as.numeric(RR1$Al_Percent), na.rm=TRUE)
+mean(as.numeric(RR1$Fe_Percent), na.rm=TRUE)
+median(as.numeric(RR1$Fe_Percent), na.rm=TRUE)
+sd(as.numeric(RR1$Fe_Percent), na.rm=TRUE)
+mean(as.numeric(RR1$Pb_Percent), na.rm=TRUE)
+median(as.numeric(RR1$Pb_Percent), na.rm=TRUE)
+sd(as.numeric(RR1$Pb_Percent), na.rm=TRUE)
+mean(as.numeric(RR1$Zn_Percent), na.rm=TRUE)
+median(as.numeric(RR1$Zn_Percent), na.rm=TRUE)
+sd(as.numeric(RR1$Zn_Percent), na.rm=TRUE)
+mean(as.numeric(RR1$Cr_Percent), na.rm=TRUE)
+median(as.numeric(RR1$Cr_Percent), na.rm=TRUE)
+sd(as.numeric(RR1$Cr_Percent), na.rm=TRUE)
+mean(as.numeric(RR1$Cu_Percent), na.rm=TRUE)
+median(as.numeric(RR1$Cu_Percent), na.rm=TRUE)
+sd(as.numeric(RR1$Cu_Percent), na.rm=TRUE)
+mean(as.numeric(RR1$Ni_Percent), na.rm=TRUE)
+median(as.numeric(RR1$Ni_Percent), na.rm=TRUE)
+sd(as.numeric(RR1$Ni_Percent), na.rm=TRUE)
+```
+```{r}
+mean(as.numeric(ER1$Al_Percent), na.rm=TRUE)
+median(as.numeric(ER1$Al_Percent), na.rm=TRUE)
+sd(as.numeric(ER1$Al_Percent), na.rm=TRUE)
+mean(as.numeric(ER1$Fe_Percent), na.rm=TRUE)
+median(as.numeric(ER1$Fe_Percent), na.rm=TRUE)
+sd(as.numeric(ER1$Fe_Percent), na.rm=TRUE)
+mean(as.numeric(ER1$Pb_Percent), na.rm=TRUE)
+median(as.numeric(ER1$Pb_Percent), na.rm=TRUE)
+sd(as.numeric(ER1$Pb_Percent), na.rm=TRUE)
+mean(as.numeric(ER1$Zn_Percent), na.rm=TRUE)
+median(as.numeric(ER1$Zn_Percent), na.rm=TRUE)
+sd(as.numeric(ER1$Zn_Percent), na.rm=TRUE)
+mean(as.numeric(ER1$Cr_Percent), na.rm=TRUE)
+median(as.numeric(ER1$Cr_Percent), na.rm=TRUE)
+sd(as.numeric(ER1$Cr_Percent), na.rm=TRUE)
+mean(as.numeric(ER1$Cu_Percent), na.rm=TRUE)
+median(as.numeric(ER1$Cu_Percent), na.rm=TRUE)
+sd(as.numeric(ER1$Cu_Percent), na.rm=TRUE)
+mean(as.numeric(ER1$Ni_Percent), na.rm=TRUE)
+median(as.numeric(ER1$Ni_Percent), na.rm=TRUE)
+sd(as.numeric(ER1$Ni_Percent), na.rm=TRUE)
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

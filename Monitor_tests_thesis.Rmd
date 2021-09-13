@@ -1,0 +1,91 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+logit()
+Air <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/Air_Mon_Recalculate.csv")
+
+Mon2020all <- read.csv("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\Mon2020all.csv")
+
+MonES0 <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/MonES0.csv")
+MonHU0<- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/MonHU0.csv")
+
+#PM 2.5
+PMBM <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/BMPM.csv")
+PMES <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/ESPM.csv")
+PMHU <- read.csv("C://Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/HUPM.csv")
+#Pm 10
+PM10 <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/PM10Bmore.csv")
+```
+```
+
+```{r}
+fligner.test(Air$Al_perc_day ~ Air$Area)
+fligner.test(Air$Fe_Perc_Day ~ Air$Area)
+fligner.test(Air$Pb_Perc_Day ~ Air$Area)
+```
+
+```{r}
+hist(Air$Al_perc_day)
+hist(Air$Fe_Perc_Day)
+hist(Air$Pb_Perc_Day)
+```
+
+```{r}
+t.test(Air$Al_perc_day ~ Air$Area)
+t.test(Air$Fe_Perc_Day ~ Air$Area)
+t.test(Air$Pb_Perc_Day ~ Air$Area)
+```
+```{r}
+wilcox.test(Air$Al_perc_day ~ Air$Area)
+wilcox.test(Air$Fe_Perc_Day ~ Air$Area)
+wilcox.test(Air$Pb_Perc_Day ~ Air$Area)
+```
+```{r}
+Mon2020all <- subset(Mon2020all, Mon2020all$Site == "HU"|Mon2020all$Site=="ES")
+
+fligner.test(Mon2020all$PM ~ Mon2020all$Site)
+fligner.test(Mon2020all$Fe ~ Mon2020all$Site)
+fligner.test(Mon2020all$Pb ~ Mon2020all$Site)
+fligner.test(Mon2020all$Al ~ Mon2020all$Site)
+
+```
+```{r}
+wilcox.test(Mon2020$PM ~ Mon2020$Site)
+wilcox.test(Mon2020$Fe ~ Mon2020$Site)
+wilcox.test(Mon2020$Pb ~ Mon2020$Site)
+wilcox.test(Mon2020$Al ~ Mon2020$Site)
+```
+
+```{r}
+t.test(Mon2020all$PM ~ Mon2020all$Site)
+t.test(Mon2020all$Fe ~ Mon2020all$Site)
+t.test(Mon2020all$Pb ~ Mon2020all$Site)
+t.test(Mon2020all$Al ~ Mon2020all$Site)
+```
+```{r}
+fligner.test(Mon2020all$Fe. ~ Mon2020all$Site)
+fligner.test(Mon2020all$Pb. ~ Mon2020all$Site)
+fligner.test(Mon2020all$Al. ~ Mon2020all$Site)
+```
+```{r}
+wilcox.test(Mon2020all$Fe. ~ Mon2020all$Site)
+wilcox.test(Mon2020all$Pb. ~ Mon2020all$Site)
+wilcox.test(Mon2020all$Al. ~ Mon2020all$Site)
+```
+```{r}
+t.test(Mon2020all$Fe. ~ Mon2020all$Site)
+t.test(Mon2020all$Pb. ~ Mon2020all$Site)
+t.test(Mon2020all$Al. ~ Mon2020all$Site)
+```
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

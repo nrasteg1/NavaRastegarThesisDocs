@@ -1,0 +1,259 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(ggpubr)
+library(gridExtra)
+library(stringr)
+```
+
+Load docs
+```{r}
+MonESAll <- read.csv("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\MonESAll.csv")
+MonHUAll <- read.csv("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\MonHUAll.csv")
+BM <- read.csv("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\BMPM.csv")
+
+```
+Date formatting
+```{r}
+MonESAll$Date <- as.Date(MonESAll$Date)
+MonHUAll$Date <- as.Date(MonHUAll$Date)
+MonHUAll$Yr <- as.factor(MonHUAll$Yr)
+MonESAll$Yr <- as.factor(MonESAll$Yr)
+BM$Date <- as.Date(BM$Date)
+BM$Year <- str_sub(BM$Date,  3, 4)
+
+MonHUAll0 <- MonHUAll
+MonHUAll0[MonHUAll0<0] <- 0
+MonESAll0 <- MonESAll
+MonESAll0[MonESAll0<0] <- 0
+
+MonHUAll0$Year = gsub(" ", "",paste("20",MonHUAll0$Yr))
+MonESAll0$Year = gsub(" ", "",paste("20",MonESAll0$Yr))
+
+```
+```{r}
+
+ggsave("PMES.png", ggplot(data = MonESAll0, aes( y = PM2.5))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="PM2.5 (µg/m3)", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+
+```{r}
+ggsave("FEES.png", ggplot(data = MonESAll0, aes( y = Fe))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="Fe (µg/m3)", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+
+```{r}
+ggsave("PBES.png", ggplot(data = MonESAll0, aes( y = Pb))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="Pb (µg/m3)", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+  
+```
+```{r}
+ggsave("ALES.png", ggplot(data = MonESAll0, aes( y = Al))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="Al (µg/m3)", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+```{r}
+ggsave("FEperES.png", ggplot(data = MonESAll0, aes( y = Feper))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="% Fe in PM 2.5 ", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+```{r}
+ggsave("ALperES.png", ggplot(data = MonESAll0, aes( y = Alper))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="% Al in PM2.5", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+```{r}
+ggsave("PBperES.png",ggplot(data = MonESAll0, aes( y = Pbper))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="% Pb in PM2.5", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+
+
+```{r}
+ggsave("PMHU.png", ggplot(data = MonHUAll0, aes( y = PM2.5))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="PM2.5 (µg/m3)", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+
+
+```{r}
+ggsave("PBHU.png", ggplot(data = MonHUAll0, aes( y = Pb))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="Pb (µg/m3)", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+```{r}
+ggsave("PMBM.png", ggplot(data = BM, aes( y = PM2.5))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="PM2.5 (µg/m3)", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+
+```{r}
+ggsave("FEHU.png",
+ggplot(data = MonHUAll0, aes( y = Fe))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="Fe (µg/m3)", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+```{r}
+ggsave("ALHU.png",
+ggplot(data = MonHUAll0, aes( y = Al))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="Al (µg/m3)", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+```{r}
+ggsave("FEperHU.png",
+ggplot(data = MonHUAll0, aes( y = Feper))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="% Fe in PM2.5 ", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+```{r}
+ggsave( "ALperHU.png",
+ggplot(data = MonHUAll0, aes( y = Alper))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="% Al in PM2.5", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+
+```
+```{r}
+ggsave( "PBperHU.png",
+ggplot(data = MonHUAll0, aes( y = Pbper))+
+  geom_boxplot(color = "#00AFBB", size = 1) +
+  facet_grid(~Year)+
+  labs(y="% Pb in PM2.5", x= "Year")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()),
+  width= 1000,
+  height= 600, 
+  dpi=200,
+  units='px',
+  device= 'png')
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
