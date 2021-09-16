@@ -8,7 +8,6 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
 ```{r}
-logit()
 Air <- read.csv("C:/Users/nrast/OneDrive/Documents/GitHub/nrastegthesis/Air_Mon_Recalculate.csv")
 
 Mon2020all <- read.csv("C:\\Users\\nrast\\OneDrive\\Documents\\GitHub\\nrastegthesis\\Mon2020all.csv")
